@@ -9,10 +9,12 @@ class Weather
     if cities_links.include? city
       if request == '-av_min'
         id = 4
-        puts temperatures(city, id, split('_').last)
+        kind = request.split('_').last
+        puts temperatures(city, id, kind)
       elsif request == '-av_max'
         id = 5
-        puts temperatures(city, id, split('_').last)
+        kind = request.split('_').last
+        puts temperatures(city, id, kind)
       elsif request == '-today'
         ids = { min: 4, max: 5, wind: 9, symb_del_tiempo: 10 }
         puts temperature(city, ids)
