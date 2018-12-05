@@ -6,6 +6,6 @@ commands:
 2. unzip /path/to/el_tiempo-master.zip -d /tmp/mariacastro_interview_exercise/
 3. chmod 755 /tmp/mariacastro_interview_exercise/el_tiempo-master/eltiempo 
 4. PATH="/tmp/mariacastro_interview_exercise/el_tiempo-master:$PATH"
-    .this last point need to be repeated every time you open a new tab on the terminal
+  4.1. this last point need to be repeated every time you open a new tab on the terminal
 
 path/to -> real path for that file
