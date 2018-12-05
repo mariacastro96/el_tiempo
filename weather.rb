@@ -1,32 +1,38 @@
 require 'faraday'
 require 'nokogiri'
 require 'date'
-require 'byebug'
 
 class Weather
 
-  def give_info(request, city)
-    if cities_links.include? city
-      if request == '-av_min'
-        id = 4
-        kind = request.split('_').last
-        puts temperatures(city, id, kind)
-      elsif request == '-av_max'
-        id = 5
-        kind = request.split('_').last
-        puts temperatures(city, id, kind)
-      elsif request == '-today'
-        ids = { min: 4, max: 5, wind: 9, symb_del_tiempo: 10 }
-        puts temperature(city, ids)
-      else
-        puts 'Por favor inserte una opción correcta:  [av_max | av_min | today]'
-      end
-    else
-      puts "Por favor inserte un municipio existente. > #{city} < no es un municipio de Barcelona "
-    end
+  def initialize(request, city)
+    get_city(city, request)
   end
 
   private
+
+  def get_city(city, request)
+    if get_cities_links.include? city
+      get_citys_weather_info(city)
+      get_info(request)
+    else
+      puts "Por favor inserte un municipio existente. > #{city} < no es un municipio de Barcelona"
+    end
+  end
+
+  def get_info(request)
+    if request == '-av_min'
+      id = 4
+      puts get_average_data(id)
+    elsif request == '-av_max'
+      id = 5
+      puts get_average_data(id)
+    elsif request == '-today'
+      ids = { min: 4, max: 5, wind: 9, symb_del_tiempo: 10 }
+      puts get_todays_data(ids)
+    else
+      puts 'Por favor inserte una opción correcta:  [-av_max | -av_min | -today]'
+    end
+  end
 
   def parse(link)
     link << '&affiliate_id=zdo2c683olan'
@@ -34,17 +40,7 @@ class Weather
     xml_doc = Nokogiri::XML(response.body)
   end
 
-  def day_adjusted
-    #the days in the API start as Saturday = 1 and Date.today starts as monday = 1
-    day = Date.today.cwday.to_i
-    if (1..5).to_a.include? day
-      day + 2
-    else
-      day - 5
-    end
-  end
-
-  def cities_links
+  def get_cities_links
     # all the links to the cities's details
     cities = {}
     xml_doc = parse('http://api.tiempo.com/index.php?api_lang=es&division=102')
@@ -54,31 +50,41 @@ class Weather
     cities
   end
 
-  def temperatures(city, id, kind)
-    # array of temperatures (min or max)
-    xml_doc = parse(cities_links[city])
+  def get_citys_weather_info(city)
+    # parse all the info
+    @xml_doc ||= parse(get_cities_links[city])
+  end
+
+  def get_average_data(id)
+    # get average data result (min or max)
     temperatures_arr = []
-    xml_doc.xpath("//var[icon=#{id}]/data/forecast").each do |forecast|
+    kind_temperature = @xml_doc.xpath("//var[icon=#{id}]/name").text
+    @xml_doc.xpath("//var[icon=#{id}]/data/forecast").each do |forecast|
       temperatures_arr << forecast.xpath('@value').text.to_i
     end
-    average(temperatures_arr, kind)
+    avg = average(temperatures_arr)
+    "La #{kind_temperature} de esta semana en promedio es: #{avg}C"
   end
 
-  def temperature(city, ids)
-    # data about today's temperature (min and max)
+  def get_todays_data(ids)
+    #data for a specific day (day adjusted)
     temp_info = {}
-    xml_doc = parse(cities_links[city])
-    temp_info[:min_temp] = xml_doc.xpath("//var[icon=#{ids[:min]}]/data/forecast[@data_sequence = '#{day_adjusted}']/@value").text.to_i
-    temp_info[:max_temp] = xml_doc.xpath("//var[icon=#{ids[:max]}]/data/forecast[@data_sequence = '#{day_adjusted}']/@value").text.to_i
-    temp_info[:winds] = xml_doc.xpath("//var[icon=#{ids[:wind]}]/data/forecast[@data_sequence = '#{day_adjusted}']/@value").text
-    temp_info[:detailes_explan] = xml_doc.xpath("//var[icon=#{ids[:symb_del_tiempo]}]/data/forecast[@data_sequence = '#{day_adjusted}']/@value").text
-    "Hoy, la temperatura mínima es #{temp_info[:min_temp]}C y la temperatura máxima es #{temp_info[:max_temp]}C. Con #{temp_info[:winds]} y #{temp_info[:detailes_explan]}"
+    @xml_doc.xpath("//var").each do |var_line|
+      temp_info[var_line.xpath('icon').text.to_i] = [var_line.xpath('name').text, var_line.xpath("data/forecast[@data_sequence = '#{day_adjusted}']/@value").text]
+    end
+    "Hoy, con #{temp_info[ids[:wind]][1]} y #{temp_info[ids[:symb_del_tiempo]][1]}, la #{temp_info[ids[:min]][0]} es #{temp_info[ids[:min]][1]}C y la #{temp_info[ids[:max]][0]} es #{temp_info[ids[:max]][1]}C."
   end
 
-  def average(temp, kind)
-    # average of array of temperatures (min or max)
+  def day_adjusted
+    #the days in the API start as Saturday = 1 and Date.today starts as monday = 1
+    day = Date.today.cwday.to_i
+    (1..5).to_a.include? day ? day + 2 : day - 5
+    day
+  end
+
+  def average(temp)
+    # average of an array of temperatures (min or max)
     avg = (temp.inject(0) { |sum, x| sum + x }.to_f / temp.count).round(2)
-    "El promedio #{kind} de esta semana es: #{avg}C"
   end
 
 end
