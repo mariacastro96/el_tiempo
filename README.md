@@ -1,5 +1,11 @@
 # el_tiempo
  No need to unzip the file you download
+ Gems being used: 
+ 1. faraday
+ 2. nokogiri
+ 
+ (You may have to install them)
+ 
 commands: 
 
 1. mkdir /tmp/mariacastro_interview_exercise
