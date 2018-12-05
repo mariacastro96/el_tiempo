@@ -1,13 +1,14 @@
-# el_tiempo
- No need to unzip the file you download
+# el_tiempo_cli
+
+## Warning
+ **No need to unzip the file you download**
  
- Gems being used: 
+ **Gems being used:**
  1. faraday
  2. nokogiri
+ (You may have to install nokogiri)
  
- (You may have to install them)
- 
-commands: 
+## commands (run in the terminal): 
 
 1. mkdir /tmp/mariacastro_interview_exercise
 2. unzip /path/to/el_tiempo-master.zip -d /tmp/mariacastro_interview_exercise/
