@@ -1,7 +1,6 @@
 # el_tiempo_cli
 
-## Warning
- **No need to unzip the file you download**
+## No need to unzip the file you download
  
  **Gems being used:**
  1. faraday
@@ -15,7 +14,7 @@
 3. chmod 755 /tmp/mariacastro_interview_exercise/el_tiempo-master/eltiempo 
 4. PATH="/tmp/mariacastro_interview_exercise/el_tiempo-master:$PATH"
 
-**this last point need to be repeated every time you open a new tab on the terminal**
+**this last point needs to be repeated every time you open a new tab on the terminal**
 
 **path/to -> real path for that file**
 
