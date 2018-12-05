@@ -17,3 +17,10 @@ commands:
 (this last point need to be repeated every time you open a new tab on the terminal)
 
 path/to -> real path for that file
+
+make it work (run):
+1. eltiempo -today 'Barcelona'
+2. eltiempo -av_max 'Barcelona'
+3. eltiempo -av_min 'Barcelona'
+
+(or any other municipality of Barcelona)
