@@ -1,7 +1,6 @@
 # el_tiempo_cli
 
-## Warning
- **No need to unzip the file you download**
+## No need to unzip the file you download
  
  **Gems being used:**
  1. faraday
